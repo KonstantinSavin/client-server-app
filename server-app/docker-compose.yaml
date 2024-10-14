@@ -1,0 +1,41 @@
+services:
+  server:
+    container_name: mtg_server
+    build: ./
+    ports:
+     - "8000:8080"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      DATABASE_HOST: ${DB_HOST}
+      DATABASE_PORT: ${DB_PORT}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - .env
+    networks:
+      - mynet
+    restart: always
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+  postgres:
+    container_name: mtg_db
+    image: postgres:15.6-bookworm
+    hostname: postgres
+    networks:
+     - mynet
+    restart: always
+    ports:
+     - "15432:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      DATABASE_HOST: ${DB_HOST}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - .env
+networks:
+  mynet:
+    name: my-shared-db-network
